@@ -1,0 +1,23 @@
+[project]
+name = "launch"
+version = "0.1.0"
+authors = [
+    {name = "Chris Taylor", email = "chris11.taylor@nttdata.com"}
+]
+description = "CLI tooling for common Launch functions"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache 2.0"}
+dependencies = ["click==8.1.7", "pygithub==2.1.1"]
+
+[tool.setuptools]
+package-dir = {launch="launch"}
+
+[project.optional-dependencies]
+dev = ["pytest==7.4.3", "black==23.11.0", "isort==5.12.0"]
+
+[project.scripts]
+launch = "launch.entrypoint:cli"
+
+[tool.isort]
+profile = "black"
