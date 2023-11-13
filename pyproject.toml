@@ -17,7 +17,7 @@ package-dir = {launch="launch"}
 dev = ["pytest==7.4.3", "black==23.11.0", "isort==5.12.0"]
 
 [project.scripts]
-launch = "launch.entrypoint:cli"
+launch = "launch.cli.entrypoint:cli"
 
 [tool.isort]
 profile = "black"

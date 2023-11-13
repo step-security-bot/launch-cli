@@ -1,12 +1,10 @@
 import requests
-from github import Auth, Github
-from github.AuthenticatedUser import AuthenticatedUser
 from github.Branch import Branch
 from github.Permissions import Permissions
 from github.Repository import Repository
 from github.Team import Team
 
-from .auth import GITHUB_HEADERS
+from .auth import github_headers
 
 
 def grant_maintain(team: Team, repo: Repository, dry_run=True) -> None:
@@ -65,7 +63,7 @@ def grant_admin(team: Team, repo: Repository, dry_run=True) -> None:
         print(f"Permissions are already in place for {team.slug} on {repo.url}")
 
 
-def configure_default_branch_protection(repo: Repository, dry_run=True):
+def configure_default_branch_protection(repo: Repository, dry_run=True) -> None:
     default_branch: Branch = repo.get_branch(repo.default_branch)
     if not default_branch.name == "main":
         print(
@@ -77,10 +75,8 @@ def configure_default_branch_protection(repo: Repository, dry_run=True):
         "dismiss_stale_reviews": False,
         "require_code_owner_reviews": True,
         "required_approving_review_count": 2,
-        # "require_last_push_approval": True,
         "required_linear_history": True,
         "allow_force_pushes": False,
-        # "allow_deletions": False,
         "block_creations": True,
         "required_conversation_resolution": False,
         "lock_branch": False,
@@ -121,8 +117,13 @@ def set_require_approval_of_most_recent_reviewable_push(
     """
     url = f"https://api.github.com/repos/{organization}/{repository_name}/branches/{branch_name}/protection/required_pull_request_reviews"
     payload = {"require_last_push_approval": True}
-    response = requests.patch(url=url, json=payload, headers=GITHUB_HEADERS)
-    if not response.ok:
+    try:
+        response = requests.patch(url=url, json=payload, headers=github_headers())
+        if not response.ok:
+            raise RuntimeError(
+                f"Failed to set_require_approval_of_most_recent_reviewable_push to {url}: Status Code: {response.status_code} Body: {response.text}"
+            )
+    except Exception as e:
         raise RuntimeError(
-            f"Failed to set_require_approval_of_most_recent_reviewable_push to {url}: Status Code: {response.status_code} Body: {response.text}"
-        )
+            f"Failed to set_require_approval_of_most_recent_reviewable_push to {url}"
+        ) from e
