@@ -7,8 +7,6 @@ def cli():
     pass
 
 
-from .aws import aws_group
 from .github import github_group
 
 cli.add_command(github_group)
-cli.add_command(aws_group)
